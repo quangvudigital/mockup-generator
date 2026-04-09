@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tự động tạo mockup từ thông tin tải lên của bạn.">
+    <title>AI Mockup Generator & Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="blob shape-1"></div>
+        <div class="blob shape-2"></div>
+        <div class="blob shape-3"></div>
+    </div>
+
+    <main class="app-container">
+        <header class="header">
+            <h1><i class="fa-solid fa-wand-magic-sparkles"></i> MagicMockup</h1>
+            <p>Tạo, chỉnh sửa trực tiếp và xuất mockup chuyên nghiệp trong vài giây</p>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Khu vực tải lên thông tin -->
+            <section class="upload-section glass-card">
+                <h2>1. Cung cấp thông tin</h2>
+                
+                <div class="form-group">
+                    <label for="prompt">Mô tả giao diện bạn muốn tạo</label>
+                    <textarea id="prompt" placeholder="Ví dụ: Một trang landing page bán giày thể thao..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tải lên tệp tham khảo</label>
+                    <div class="drop-zone" id="dropZone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Kéo thả tệp vào đây hoặc <span>click để chọn</span></p>
+                        <input type="file" id="fileInput" multiple hidden>
+                    </div>
+                    <div id="fileList" class="file-list"></div>
+                </div>
+
+                <button id="generateBtn" class="premium-btn">
+                    Tạo Bản Phác Thảo <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </section>
+
+            <!-- Khu vực hiển thị kết quả -->
+            <section class="result-section glass-card">
+                <h2>2. Tùy chỉnh & Kết quả</h2>
+                
+                <!-- Thanh công cụ chỉnh sửa -->
+                <div class="editor-toolbar hidden" id="editorToolbar">
+                    <span><i class="fa-solid fa-palette"></i> Tùy chỉnh màu sắc:</span>
+                    <label>Nền: <input type="color" id="bgColorPicker" value="#2a2a2a"></label>
+                    <label>Chữ: <input type="color" id="textColorPicker" value="#ffffff"></label>
+                    <label>Nút/Nhấn: <input type="color" id="accentColorPicker" value="#6366f1"></label>
+                </div>
+                <p id="editorTip" class="hidden" style="color: var(--secondary); font-size: 0.85rem; margin-bottom: 10px;">
+                    <i class="fa-solid fa-pen-to-square"></i> Mẹo: Click trực tiếp vào các dòng chữ trên Mockup bên dưới để sửa nội dung!
+                </p>
+
+                <div class="mockup-display" id="mockupDisplay">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <p>Bản thiết kế của bạn sẽ xuất hiện ở đây.</p>
+                    </div>
+                    
+                    <div class="loading-state hidden">
+                        <div class="loader"></div>
+                        <p>AI đang phác thảo giao diện...</p>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+
+                    <div class="result-content hidden" id="resultContent">
+                        <!-- Vùng sẽ chứa được chụp lại thành ảnh -->
+                        <div class="mockup-frame window-frame" id="captureTarget">
+                            <div class="window-header">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                            <!-- Khu vực có thể Edit -->
+                            <div class="window-body" id="mockupBody">
+                                <div class="wireframe-hero">
+                                    <h1 class="editable-content header-text" contenteditable="true">Giải pháp công nghệ Đỉnh Cao</h1>
+                                    <p class="editable-content sub-text" contenteditable="true">Tập trung nâng cao trải nghiệm người dùng với thiết kế giao diện tinh tế, hiện đại và tính năng mạnh mẽ.</p>
+                                    <button class="w-btn editable-accent" contenteditable="true">Khám Phá Ngay</button>
+                                </div>
+                                <div class="wireframe-features">
+                                    <div class="w-card editable-card">
+                                        <h3 contenteditable="true">Tốc độ cao</h3>
+                                        <p contenteditable="true">Tối ưu hóa hiệu suất</p>
+                                    </div>
+                                    <div class="w-card editable-card">
+                                        <h3 contenteditable="true">Trực quan</h3>
+                                        <p contenteditable="true">Giao diện kéo thả</p>
+                                    </div>
+                                    <div class="w-card editable-card">
+                                        <h3 contenteditable="true">Đa nền tảng</h3>
+                                        <p contenteditable="true">Hỗ trợ Web & Mobile</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions hidden" id="resultActions">
+                    <button class="secondary-btn" id="downloadBtn"><i class="fa-solid fa-download"></i> Tải Mockup (PNG)</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- html2canvas phục vụ chụp ảnh Mockup -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
